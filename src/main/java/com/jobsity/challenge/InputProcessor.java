@@ -28,28 +28,25 @@ public class InputProcessor {
             while (scanner.hasNext()) {
                 i++;
                 String line = scanner.nextLine();
-                if (!line.matches("\\w.*(\\s|\\t)(F|\\d.*)$")) {
+                if (!line.matches("^\\w.*\\t(F|\\d.*)$")) {
                     throw new AppException(String.format("Line: %d is invalid", i));
                 }
-                String[] arr = line.split("\\s|\\t");
-                String name = arr[0];
-                String pointString = arr[1];
-                int points = 0;
-                if (!"F".equals(pointString)) {
-                    points = Integer.parseInt(pointString);
-                }
-                setScores(playerMap, name, points);
+                String[] arr = line.split("\\t");
+                setScores(playerMap, arr[0], arr[1]);
             }
 
             for (Map.Entry<String, Player> entry : playerMap.entrySet()) {
                 System.out.println(entry.getValue());
             }
+            if (i == 0) {
+                throw new AppException("The file is empty");
+            }
         } catch (AppException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
-    static void setScores(Map<String, Player> map, String name, int points) {
+    static void setScores(Map<String, Player> map, String name, String points) {
         Player player = map.getOrDefault(name, new Player(name));
         player.setPoints(points);
         map.put(name, player);

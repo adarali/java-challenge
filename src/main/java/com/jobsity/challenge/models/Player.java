@@ -1,5 +1,7 @@
 package com.jobsity.challenge.models;
 
+import com.jobsity.challenge.models.frames.FinalFrame;
+import com.jobsity.challenge.models.frames.Frame;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +27,7 @@ public class Player {
         this.name = name;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(String points) {
         attempts += 1;
         Frame current = getCurrentFrame();
         if (current != null && current.setPoints(points)) {
@@ -69,7 +71,7 @@ public class Player {
         }
     }
 
-    private void addFrame(int points) {
+    private void addFrame(String points) {
         if(frames.size() == FRAMES) return;
         Frame frame;
         if (frames.size() < FRAMES - 1) {
