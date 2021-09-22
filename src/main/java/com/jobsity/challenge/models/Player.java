@@ -27,18 +27,15 @@ public class Player {
 
     public void setPoints(int points) {
         attempts += 1;
-        if (frames.isEmpty()) {
-            addFrame(points);
-        } else {
-            Frame current = getCurrentFrame();
-            if (current.setPoints(points)) {
-                if (current.isSpare()) {
-                    spares.put(attempts, current);
-                }
-            } else {
-                addFrame(points);
+        Frame current = getCurrentFrame();
+        if (current != null && current.setPoints(points)) {
+            if (current.isSpare()) {
+                spares.put(attempts, current);
             }
+        } else {
+            addFrame(points);
         }
+
         if (strikes.containsKey(attempts - 1)) {
             strikes.get(attempts - 1).addExtraPoints(points);
         }
