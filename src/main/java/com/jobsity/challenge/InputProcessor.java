@@ -28,18 +28,17 @@ public class InputProcessor {
             while (scanner.hasNext()) {
                 i++;
                 String line = scanner.nextLine();
-
-                String[] arr = line.split(" |\\t");
-                if (arr.length != 2) {
+                if (!line.matches("\\w.*(\\s|\\t)(F|\\d.*)$")) {
                     throw new AppException(String.format("Line: %d is invalid", i));
                 }
+                String[] arr = line.split("\\s|\\t");
                 String name = arr[0];
                 String pointString = arr[1];
                 int points = 0;
                 if (!"F".equals(pointString)) {
                     points = Integer.parseInt(pointString);
                 }
-                fillFrames(playerMap, name, points);
+                setScores(playerMap, name, points);
             }
 
             for (Map.Entry<String, Player> entry : playerMap.entrySet()) {
@@ -50,7 +49,7 @@ public class InputProcessor {
         }
     }
 
-    static void fillFrames(Map<String, Player> map, String name, int points) {
+    static void setScores(Map<String, Player> map, String name, int points) {
         Player player = map.getOrDefault(name, new Player(name));
         player.setPoints(points);
         map.put(name, player);

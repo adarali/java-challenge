@@ -66,11 +66,14 @@ public class Player {
     }
 
     private void setFrameScore(Frame frame) {
-        this.score = frame.getTotalPoints() + this.score;
-        frame.setScore(this.score);
+        if (frame.getScore() == null) {
+            this.score = frame.getTotalPoints() + this.score;
+            frame.setScore(this.score);
+        }
     }
 
     private void addFrame(int points) {
+        if(frames.size() == FRAMES) return;
         Frame frame;
         if (frames.size() < FRAMES - 1) {
             frame = new Frame(points, frames.size() + 1);
