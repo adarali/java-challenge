@@ -1,7 +1,7 @@
 package com.jobsity.challenge.models;
 
-import com.jobsity.challenge.models.frames.FinalFrame;
 import com.jobsity.challenge.models.frames.Frame;
+import com.jobsity.challenge.models.frames.FrameFactory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static com.jobsity.challenge.misc.Constants.*;
+
+import static com.jobsity.challenge.misc.Constants.FRAMES;
 
 @Getter @Setter
 @EqualsAndHashCode(of = "name")
@@ -53,7 +54,7 @@ public class Player {
             setFrameScore(spare);
         }
 
-        if (getCurrentFrame().isNormal()) {
+        if (getCurrentFrame().isDone()) {
             Frame frame = getCurrentFrame();
             setFrameScore(frame);
         }
@@ -73,12 +74,7 @@ public class Player {
 
     private void addFrame(String points) {
         if(frames.size() == FRAMES) return;
-        Frame frame;
-        if (frames.size() < FRAMES - 1) {
-            frame = new Frame(points, frames.size() + 1);
-        } else {
-            frame = new FinalFrame(points, frames.size() + 1);
-        }
+        Frame frame = FrameFactory.createFrame(points, frames.size());
         frames.add(frame);
         if (frame.isStrike()) {
             strikes.put(attempts, frame);
@@ -87,11 +83,10 @@ public class Player {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Player{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", frames=").append(frames);
-        sb.append(", score=").append(score);
-        sb.append('}');
-        return sb.toString();
+        String s = "Player{" + "name='" + name + '\'' +
+                ", frames=" + frames +
+                ", score=" + score +
+                '}';
+        return s;
     }
 }
