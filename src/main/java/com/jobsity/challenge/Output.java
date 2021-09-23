@@ -33,7 +33,7 @@ public class Output {
 
     private static void printRow(String prefix, Stream<?> stream) {
         Object[] arr = Stream.concat(Stream.of(prefix), stream).toArray();
-        System.out.println(String.format(StringUtils.repeat("%-15s", arr.length), arr).trim());
+        System.out.println(String.format(StringUtils.repeat("%-12s", arr.length), arr).trim());
     }
 
 }
