@@ -1,32 +1,39 @@
 package com.jobsity.challenge;
 
-import com.jobsity.challenge.misc.Constants;
 import com.jobsity.challenge.models.Player;
+import com.jobsity.challenge.models.frames.Frame;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static com.jobsity.challenge.misc.Constants.FRAMES;
 
 public class Output {
 
     public static void print(Map<String, Player> map) {
-        String tab = "\t\t";
 
-        String frames = IntStream.range(1, Constants.FRAMES + 1).boxed()
-                .map(Object::toString).collect(Collectors.joining(tab, "Frame\t\t", ""));
-
-        System.out.println(frames);
+        printRow("Frame", IntStream.range(1, FRAMES + 1).boxed());
 
         map.forEach((name, player) -> {
             System.out.println(name);
-            String pinfalls = player.getFrames().stream().map(frame -> String.join("\t", frame.getPinfalls()))
-                    .collect(Collectors.joining("    ", "Pinfalls\t\t", ""));
-            System.out.println(pinfalls);
-            String scores = player.getFrames().stream().map(frame -> frame.getScore())
-                    .map(Objects::toString).collect(Collectors.joining("        ", "Score\t\t", ""));
-            System.out.println(scores);
+            Stream<String> pinfalls = player.getFrames().stream()
+                    .map(frame -> String.join("   ", frame.getPinfalls()));
+            printRow("Pinfalls", pinfalls);
+            Stream<Integer> scores = player.getFrames().stream()
+                    .map(Frame::getScore);
+            printRow("Score", scores);
         });
+    }
+
+    private static void printRow(String prefix, Stream<?> stream) {
+        Object[] arr = Stream.concat(Stream.of(prefix), stream).toArray();
+        System.out.println(String.format(StringUtils.repeat("%-15s", arr.length), arr).trim());
     }
 
 }
