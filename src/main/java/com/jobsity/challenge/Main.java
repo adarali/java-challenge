@@ -4,7 +4,7 @@ import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.misc.Input;
 import com.jobsity.challenge.misc.Output;
 import com.jobsity.challenge.misc.Utils;
-import com.jobsity.challenge.models.Player;
+import com.jobsity.challenge.models.players.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;

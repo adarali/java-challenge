@@ -13,7 +13,7 @@ public class Input {
             i++;
             String line = scanner.nextLine();
             if (!line.matches("^\\w.*\\t(F|[0-9]+)$")) {
-                throw new AppException(String.format("Line: %d is invalid", i));
+                throw new AppException(String.format("Line %d is invalid", i));
             }
             doForEachLine.accept(line);
         }

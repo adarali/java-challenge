@@ -37,23 +37,26 @@ public abstract class AbstractFrame implements Frame {
         if (setPoints(points)) {
             String p = points == Constants.PINS ? "X" : pointsString;
             pinfalls.add(p);
-            if (isStrike()) {
-                pinfalls.add(0, "");
-            } else if (isSlash()) {
-                pinfalls.set(pinfalls.size() - 1, "/");
-            }
+            insertStrike();
+            insertSlash();
             return true;
         }
         return false;
     }
 
-    protected boolean isSlash() {
+    protected void insertStrike() {
+        if(isStrike()) pinfalls.add(0, "");
+    }
+
+    protected void insertSlash() {
         List<Integer> attempts = getAttempts();
         int size = attempts.size();
-        if(size < 2) return false;
+        if(isStrike() || size < 2) return;
         int last1 = attempts.get(size - 1);
         int last2 = attempts.get(size - 2);
-        return last2 < Constants.PINS && last1 + last2 == Constants.PINS;
+        boolean b = last2 < Constants.PINS && last1 + last2 == Constants.PINS;
+        if(b) getPinfalls().set(size - 1, "/");
+
     }
 
     protected abstract boolean setPoints(int points);

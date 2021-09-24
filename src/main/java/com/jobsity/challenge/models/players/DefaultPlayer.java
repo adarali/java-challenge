@@ -1,11 +1,10 @@
-package com.jobsity.challenge.models;
+package com.jobsity.challenge.models.players;
 
 import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,8 @@ import java.util.Map;
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
 @EqualsAndHashCode(of = "name")
-public class Player {
+public class DefaultPlayer implements Player {
+    @Getter
     private final String name;
     @Getter
     private final List<Frame> frames = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Player {
     private Map<Integer, Frame> spares = new HashMap<>();
     private Frame currentFrame;
 
-    public Player(String name) {
+    public DefaultPlayer(String name) {
         this.name = name;
     }
 

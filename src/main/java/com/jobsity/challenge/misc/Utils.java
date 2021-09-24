@@ -1,6 +1,6 @@
 package com.jobsity.challenge.misc;
 
-import com.jobsity.challenge.models.Player;
+import com.jobsity.challenge.models.players.Player;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class Utils {
         String[] arr = line.split("\\t");
         String name = arr[0];
         String points = arr[1];
-        Player player = map.getOrDefault(name, new Player(name));
+        Player player = map.getOrDefault(name, Player.createPlayer(name));
         player.setPoints(points);
         map.put(name, player);
     }

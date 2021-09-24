@@ -6,7 +6,7 @@ import com.jobsity.challenge.exceptions.AppException;
 import static com.jobsity.challenge.misc.Constants.*;
 
 import com.jobsity.challenge.misc.Utils;
-import com.jobsity.challenge.models.Player;
+import com.jobsity.challenge.models.players.Player;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
 import org.junit.jupiter.api.Test;
@@ -123,11 +123,11 @@ public class AppTests {
                         .getMessage();
 
                 switch (file.getName()) {
-                    case "free-text.txt": assertEquals("Line: 1 is invalid", message); break;
-                    case "negative.txt": assertEquals("Line: 2 is invalid", message); break;
+                    case "free-text.txt": assertEquals("Line 1 is invalid", message); break;
+                    case "negative.txt": assertEquals("Line 2 is invalid", message); break;
                     case "empty.txt": assertEquals("The file is empty", message); break;
                     case "extra-score.txt": assertEquals("Too many attempts", message); break;
-                    case "invalid-score.txt": assertEquals("Line: 2 is invalid", message); break;
+                    case "invalid-score.txt": assertEquals("Line 2 is invalid", message); break;
                 }
 
             }
