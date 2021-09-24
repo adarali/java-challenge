@@ -19,7 +19,7 @@ public class Output {
         collection.forEach(player -> {
             System.out.println(player.getName());
             Stream<String> pinfalls = player.getFrames().stream()
-                    .map(frame -> String.join("   ", frame.getPinfalls()));
+                    .map(frame -> String.join("  ", frame.getPinfalls()));
             printRow("Pinfalls", pinfalls);
             Stream<Integer> scores = player.getFrames().stream()
                     .map(Frame::getScore);
@@ -29,7 +29,7 @@ public class Output {
 
     private static void printRow(String prefix, Stream<?> stream) {
         Object[] arr = Stream.concat(Stream.of(prefix), stream).toArray();
-        System.out.println(String.format(StringUtils.repeat("%-12s", arr.length), arr).trim());
+        System.out.println(String.format(StringUtils.repeat("%-10s", arr.length), arr).trim());
     }
 
 }
