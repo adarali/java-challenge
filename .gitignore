@@ -1,4 +1,4 @@
 /.idea/
 /target/
-/JavaChallenge.iml
+*.iml
 /dependency-reduced-pom.xml

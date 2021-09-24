@@ -10,7 +10,7 @@ To run the project, run the command
 
 `java -jar target/challenge.jar <path-to-file>`
 
-For example, to process the data included input.txt file, run the command
+For example, to process the data included inside input.txt file, run the command
 
 `java -jar target/challenge.jar input.txt`
 
