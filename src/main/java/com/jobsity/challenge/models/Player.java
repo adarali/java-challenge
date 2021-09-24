@@ -1,5 +1,6 @@
 package com.jobsity.challenge.models;
 
+import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
 import lombok.EqualsAndHashCode;
@@ -13,16 +14,16 @@ import java.util.Map;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
-@Getter @Setter
 @EqualsAndHashCode(of = "name")
 public class Player {
     private final String name;
+    @Getter
     private final List<Frame> frames = new ArrayList<>();
     private int score = 0;
     private int attempts = 0;
-    private int acc = 0;
     private Map<Integer, Frame> strikes = new HashMap<>();
     private Map<Integer, Frame> spares = new HashMap<>();
+    private Frame currentFrame;
 
     public Player(String name) {
         this.name = name;
@@ -61,8 +62,7 @@ public class Player {
     }
 
     private Frame getCurrentFrame() {
-        if(frames.isEmpty()) return null;
-        return frames.get(frames.size() - 1);
+        return this.currentFrame;
     }
 
     private void setFrameScore(Frame frame) {
@@ -73,20 +73,23 @@ public class Player {
     }
 
     private void addFrame(String points) {
-        if(frames.size() == FRAMES) return;
+        if(frames.size() == FRAMES) {
+            throw new AppException("Too many attempts");
+        }
         Frame frame = FrameFactory.createFrame(points, frames.size());
         frames.add(frame);
         if (frame.isStrike()) {
             strikes.put(attempts, frame);
         }
+        this.currentFrame = frame;
     }
 
     @Override
     public String toString() {
-        String s = "Player{" + "name='" + name + '\'' +
+        return "Player{" + "name='" + name + '\'' +
                 ", frames=" + frames +
                 ", score=" + score +
                 '}';
-        return s;
+
     }
 }

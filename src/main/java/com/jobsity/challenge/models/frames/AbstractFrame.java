@@ -15,15 +15,14 @@ import java.util.stream.IntStream;
 public abstract class AbstractFrame implements Frame {
 
     private int frameNumber;
-    @Setter(AccessLevel.PUBLIC)
     private Integer score;
     private List<Integer> attempts = new ArrayList<>();
     @Getter(AccessLevel.PUBLIC)
     private List<String> pinfalls = new ArrayList<>();
     private int extraPoints = 0;
 
-    protected AbstractFrame(String first, int frameNumber) {
-        setPoints(first);
+    protected AbstractFrame(String points, int frameNumber) {
+        setPoints(points);
         this.frameNumber = frameNumber;
     }
 
@@ -34,18 +33,27 @@ public abstract class AbstractFrame implements Frame {
         if(IntStream.range(0, Constants.PINS + 1).noneMatch(n -> n == points)) {
             throw new AppException("Points must be between 0 and " + Constants.PINS + " (inclusive)");
         }
-        List<String> attemptsString = getPinfalls();
+        List<String> pinfalls = getPinfalls();
         if (setPoints(points)) {
             String p = points == Constants.PINS ? "X" : pointsString;
-            attemptsString.add(p);
+            pinfalls.add(p);
             if (isStrike()) {
-                attemptsString.add(0, "");
-            } else if (attempts.size() > 1 && attempts.get(attempts.size() - 1) + attempts.get(attempts.size() - 2) == Constants.PINS) {
-                attemptsString.set(attemptsString.size() - 1, "/");
+                pinfalls.add(0, "");
+            } else if (isSlash()) {
+                pinfalls.set(pinfalls.size() - 1, "/");
             }
             return true;
         }
         return false;
+    }
+
+    protected boolean isSlash() {
+        List<Integer> attempts = getAttempts();
+        int size = attempts.size();
+        if(size < 2) return false;
+        int last1 = attempts.get(size - 1);
+        int last2 = attempts.get(size - 2);
+        return last2 < Constants.PINS && last1 + last2 == Constants.PINS;
     }
 
     protected abstract boolean setPoints(int points);
@@ -68,10 +76,6 @@ public abstract class AbstractFrame implements Frame {
     @Override
     public int getTotalPoints() {
         return getAttempts().stream().mapToInt(n -> n).sum() + getExtraPoints();
-    }
-
-    protected void setFrameNumber(int number) {
-        this.frameNumber = number;
     }
 
     @Override

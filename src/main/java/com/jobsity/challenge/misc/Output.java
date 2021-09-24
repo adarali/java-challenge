@@ -1,4 +1,4 @@
-package com.jobsity.challenge;
+package com.jobsity.challenge.misc;
 
 import com.jobsity.challenge.models.Player;
 import com.jobsity.challenge.models.frames.Frame;

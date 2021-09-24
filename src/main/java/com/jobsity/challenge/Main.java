@@ -1,6 +1,9 @@
 package com.jobsity.challenge;
 
 import com.jobsity.challenge.exceptions.AppException;
+import com.jobsity.challenge.misc.Input;
+import com.jobsity.challenge.misc.Output;
+import com.jobsity.challenge.misc.Utils;
 import com.jobsity.challenge.models.Player;
 
 import java.io.File;
@@ -20,19 +23,10 @@ public class Main {
         Map<String, Player> map = new HashMap<>();
 
         try (Scanner scanner = new Scanner(new File(args[0]))){
-            Input.processInput(scanner, line -> {
-                String[] arr = line.split("\\t");
-                setScores(map, arr[0], arr[1]);
-            });
+            Input.processInput(scanner, line -> Utils.setScores(map, line));
             Output.print(map);
         } catch (FileNotFoundException | AppException e) {
             System.err.println("Error: " + e.getMessage());
         }
-    }
-
-    static void setScores(Map<String, Player> map, String name, String points) {
-        Player player = map.getOrDefault(name, new Player(name));
-        player.setPoints(points);
-        map.put(name, player);
     }
 }
