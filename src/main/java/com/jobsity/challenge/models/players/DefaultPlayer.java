@@ -14,10 +14,8 @@ import java.util.Map;
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
 @EqualsAndHashCode(of = "name")
-public class DefaultPlayer implements Player {
-    @Getter
+class DefaultPlayer implements Player {
     private final String name;
-    @Getter
     private final List<Frame> frames = new ArrayList<>();
     private int score = 0;
     private int attempts = 0;
@@ -25,10 +23,16 @@ public class DefaultPlayer implements Player {
     private Map<Integer, Frame> spares = new HashMap<>();
     private Frame currentFrame;
 
-    public DefaultPlayer(String name) {
+    DefaultPlayer(String name) {
         this.name = name;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
     public void setPoints(String points) {
         attempts += 1;
         Frame current = getCurrentFrame();
@@ -63,6 +67,11 @@ public class DefaultPlayer implements Player {
 
     private Frame getCurrentFrame() {
         return this.currentFrame;
+    }
+
+    @Override
+    public List<Frame> getFrames() {
+        return frames;
     }
 
     private void setFrameScore(Frame frame) {

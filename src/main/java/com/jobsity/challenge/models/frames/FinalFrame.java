@@ -14,6 +14,7 @@ class FinalFrame extends AbstractFrame {
 
     @Override
     protected boolean setPoints(int points) {
+        if(isDone()) return false;
         int pins = Constants.PINS;
         List<Integer> attempts = getAttempts();
         if (attempts.size() < 3) {

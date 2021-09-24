@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-@Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PROTECTED)
+@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractFrame implements Frame {
 
     private int frameNumber;
@@ -74,6 +74,10 @@ public abstract class AbstractFrame implements Frame {
     @Override
     public void addExtraPoints(String points) {
         setExtraPoints(getExtraPoints() + Utils.parsePoints(points));
+    }
+
+    protected void setExtraPoints(int extraPoints) {
+        this.extraPoints = extraPoints;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class Main {
 
         try (Scanner scanner = new Scanner(new File(args[0]))){
             Input.processInput(scanner, line -> Utils.setScores(map, line));
-            Output.print(map);
+            Output.print(map.values());
         } catch (FileNotFoundException | AppException e) {
             System.err.println("Error: " + e.getMessage());
         }

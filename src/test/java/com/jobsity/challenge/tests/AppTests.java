@@ -43,6 +43,8 @@ public class AppTests {
         assertTrue(createFrame(false, "10").isStrike());
         assertFalse(createFrame(false, "8").isStrike());
         assertTrue(createFrame(false, "1", "9").isSpare());
+        assertFalse(createFrame(false, "4", "6").isDone());
+        assertTrue(createFrame(false, "1", "8").isDone());
     }
 
     @Test
@@ -63,6 +65,12 @@ public class AppTests {
         assertEquals(Arrays.asList("X", "X", "X"), createFrame(true, "10", "10", "10").getPinfalls());
         assertEquals(Arrays.asList("X", "F", "/"), createFrame(true, "10", "F", "10").getPinfalls());
         assertEquals(Arrays.asList("F", "/", "X"), createFrame(true, "F", "10", "10").getPinfalls());
+
+        assertTrue(createFrame(true, "5", "4").isDone());
+        assertFalse(createFrame(true, "6", "4").isDone());
+        assertFalse(createFrame(true, "10", "4").isDone());
+        assertTrue(createFrame(true, "10", "4", "3").isDone());
+        assertTrue(createFrame(true, "10", "4", "5").isDone());
     }
 
 
@@ -106,7 +114,6 @@ public class AppTests {
             List<Integer> expectedJeffScores = Arrays.asList(20, 39, 48, 66, 74, 84, 90, 120, 148, 167);
             assertEquals(expectedJeffScores, jeffFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
 
-
             List<Integer> expectedJohnScores = Arrays.asList(16, 25, 44, 53, 82, 101, 110, 124, 132, 151);
             assertEquals(expectedJohnScores, johnFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
         }
@@ -119,15 +126,25 @@ public class AppTests {
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             try (Scanner scanner = new Scanner(file)) {
                 Map<String, Player> map = new HashMap<>();
-                String message = assertThrows(AppException.class, () -> Input.processInput(scanner, line -> Utils.setScores(map, line)))
+                String message = assertThrows(AppException.class, () -> Input.processInput(scanner, line -> Utils.setScores(map, line))
+                        , String.format("File \"%s\" does not throw exception", file.getName()))
                         .getMessage();
 
                 switch (file.getName()) {
-                    case "free-text.txt": assertEquals("Line 1 is invalid", message); break;
-                    case "negative.txt": assertEquals("Line 2 is invalid", message); break;
-                    case "empty.txt": assertEquals("The file is empty", message); break;
-                    case "extra-score.txt": assertEquals("Too many attempts", message); break;
-                    case "invalid-score.txt": assertEquals("Line 2 is invalid", message); break;
+                    case "free-text.txt":
+                        assertEquals("Line 1 is invalid", message);
+                        break;
+                    case "negative.txt":
+                    case "invalid-score.txt":
+                        assertEquals("Line 2 is invalid", message);
+                        break;
+                    case "empty.txt":
+                        assertEquals("The file is empty", message);
+                        break;
+                    case "extra-score.txt":
+                    case "zeros-extra-score.txt":
+                        assertEquals("Too many attempts", message);
+                        break;
                 }
 
             }
