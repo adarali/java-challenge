@@ -5,7 +5,6 @@ import com.jobsity.challenge.misc.Constants;
 import com.jobsity.challenge.misc.Utils;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;

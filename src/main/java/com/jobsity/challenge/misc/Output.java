@@ -1,11 +1,10 @@
 package com.jobsity.challenge.misc;
 
-import com.jobsity.challenge.models.players.Player;
 import com.jobsity.challenge.models.frames.Frame;
+import com.jobsity.challenge.models.players.Player;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
