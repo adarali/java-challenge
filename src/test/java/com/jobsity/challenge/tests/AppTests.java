@@ -1,14 +1,12 @@
 package com.jobsity.challenge.tests;
 
 
-import com.jobsity.challenge.misc.Input;
 import com.jobsity.challenge.exceptions.AppException;
-import static com.jobsity.challenge.misc.Constants.*;
-
+import com.jobsity.challenge.misc.Input;
 import com.jobsity.challenge.misc.Utils;
-import com.jobsity.challenge.models.players.Player;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
+import com.jobsity.challenge.models.players.Player;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -22,14 +20,30 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.jobsity.challenge.misc.Constants.FRAMES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTests {
 
     @Test
+    void testFrameEquals() {
+        Frame rf1 = createFrame(false, "10");
+        Frame rf2 = createFrame(false, "4");
+
+
+        Frame ff1 = createFrame(true, "5");
+        Frame ff2 = createFrame(true, "3");
+
+        assertEquals(rf2, rf1);
+        assertEquals(ff2, ff1);
+    }
+
+    @Test
     void testRegularFrame() {
         assertThrows(AppException.class, () -> createFrame(false, "6", "5"));
-        assertThrows(AppException.class, () -> createFrame(false, "6", "16"));
 
         assertEquals(Arrays.asList("","X"), createFrame(false, "10").getPinfalls());
         assertEquals(Arrays.asList("8","/"), createFrame(false, "8", "2").getPinfalls());
@@ -39,10 +53,6 @@ public class AppTests {
         assertEquals(Arrays.asList("0","/"), createFrame(false, "0", "10").getPinfalls());
         assertEquals(Arrays.asList("F","5"), createFrame(false, "F", "5").getPinfalls());
         assertEquals(Arrays.asList("F","/"), createFrame(false, "F", "10").getPinfalls());
-
-        assertTrue(createFrame(false, "10").isStrike());
-        assertFalse(createFrame(false, "8").isStrike());
-        assertTrue(createFrame(false, "1", "9").isSpare());
         assertFalse(createFrame(false, "4", "6").isDone());
         assertTrue(createFrame(false, "1", "8").isDone());
     }
@@ -116,6 +126,12 @@ public class AppTests {
 
             List<Integer> expectedJohnScores = Arrays.asList(16, 25, 44, 53, 82, 101, 110, 124, 132, 151);
             assertEquals(expectedJohnScores, johnFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
+
+            assertEquals(Arrays.asList("3", "/"), johnFrames.get(0).getPinfalls());
+            assertEquals(Arrays.asList("7", "/"), johnFrames.get(7).getPinfalls());
+            assertEquals(Arrays.asList("8", "/"), jeffFrames.get(5).getPinfalls());
+            assertEquals(Arrays.asList("", "X"), jeffFrames.get(0).getPinfalls());
+
         }
 
     }
@@ -152,9 +168,9 @@ public class AppTests {
     }
 
     private Frame createFrame(boolean isFinal, String... points) {
-        Frame frame = FrameFactory.createFrame(points[0], isFinal ? FRAMES - 1 : 0);
-        for (int i = 1; i < points.length; i++) {
-            frame.setPoints(points[i]);
+        Frame frame = FrameFactory.createFrame(isFinal ? FRAMES - 1 : 0);
+        for (String point : points) {
+            frame.setPoints(point);
         }
         return frame;
     }

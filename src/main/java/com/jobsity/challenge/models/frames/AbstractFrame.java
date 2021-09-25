@@ -4,13 +4,17 @@ import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.misc.Constants;
 import com.jobsity.challenge.misc.Utils;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.jobsity.challenge.misc.Constants.PINS;
+
 @Getter(AccessLevel.PROTECTED)
+@EqualsAndHashCode(of="frameNumber")
 public abstract class AbstractFrame implements Frame {
 
     private int frameNumber;
@@ -18,47 +22,25 @@ public abstract class AbstractFrame implements Frame {
     private List<Integer> attempts = new ArrayList<>();
     @Getter(AccessLevel.PUBLIC)
     private List<String> pinfalls = new ArrayList<>();
-    private int extraPoints = 0;
 
-    protected AbstractFrame(String points, int frameNumber) {
-        setPoints(points);
+    protected AbstractFrame(int frameNumber) {
         this.frameNumber = frameNumber;
     }
 
     @Override
-    public boolean setPoints(String pointsString) {
-        List<Integer> attempts = getAttempts();
+    public void setPoints(String pointsString) {
         int points = Utils.parsePoints(pointsString);
-        if(IntStream.range(0, Constants.PINS + 1).noneMatch(n -> n == points)) {
-            throw new AppException("Points must be between 0 and " + Constants.PINS + " (inclusive)");
+        validatePoints(points);
+        if (isCurrent()) {
+            pinfalls.add(points == PINS ? "X" : pointsString);
         }
-        List<String> pinfalls = getPinfalls();
-        if (setPoints(points)) {
-            String p = points == Constants.PINS ? "X" : pointsString;
-            pinfalls.add(p);
-            insertStrike();
-            insertSlash();
-            return true;
+        if (!isDone()) {
+            getAttempts().add(points);
         }
-        return false;
+        if (isSpare()) {
+            pinfalls.set(pinfalls.size() - 1, "/");
+        }
     }
-
-    protected void insertStrike() {
-        if(isStrike()) pinfalls.add(0, "");
-    }
-
-    protected void insertSlash() {
-        List<Integer> attempts = getAttempts();
-        int size = attempts.size();
-        if(isStrike() || size < 2) return;
-        int last1 = attempts.get(size - 1);
-        int last2 = attempts.get(size - 2);
-        boolean b = last2 < Constants.PINS && last1 + last2 == Constants.PINS;
-        if(b) getPinfalls().set(size - 1, "/");
-
-    }
-
-    protected abstract boolean setPoints(int points);
 
     @Override
     public Integer getScore() {
@@ -70,22 +52,46 @@ public abstract class AbstractFrame implements Frame {
         this.score = score;
     }
 
-    @Override
-    public void addExtraPoints(String points) {
-        setExtraPoints(getExtraPoints() + Utils.parsePoints(points));
-    }
-
-    protected void setExtraPoints(int extraPoints) {
-        this.extraPoints = extraPoints;
-    }
 
     @Override
     public int getTotalPoints() {
-        return getAttempts().stream().mapToInt(n -> n).sum() + getExtraPoints();
+        return getAttempts().stream().mapToInt(n -> n).sum();
     }
 
     @Override
     public String toString() {
-        return getScore() + " " + getPinfalls();
+        return getScore() + " " + getAttempts();
+    }
+
+    @Override
+    public boolean isDone() {
+        int pins = PINS;
+        List<Integer> attempts = getAttempts();
+        if(attempts.size() < 2) return false;
+        if (attempts.size() == 2) {
+            int sum = attempts.get(0) + attempts.get(1);
+            return attempts.get(0) < pins && sum < pins;
+        }
+        return true;
+    }
+
+    protected boolean isSpare() {
+        int size = getAttempts().size();
+        if (size < 2) return false;
+        int sum = getAttempts().get(size - 2) + getAttempts().get(size - 1);
+        return sum == PINS && getAttempts().get(size - 2) < PINS;
+    }
+
+    protected void validatePoints(int points) {
+        if(points < 0 || points > PINS) {
+            throw new AppException("Points must be between 0 and " + PINS + " (inclusive)");
+        }
+        int size = getAttempts().size();
+        if (!isSpare() && isCurrent() && size > 0) {
+            int last = getAttempts().get(size - 1);
+            if (points + last > PINS && last < PINS) {
+                throw new AppException(String.format("You can't knock down more than %d in a single frame", PINS));
+            }
+        }
     }
 }

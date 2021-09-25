@@ -6,9 +6,8 @@ import com.jobsity.challenge.models.frames.FrameFactory;
 import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
@@ -17,10 +16,8 @@ class DefaultPlayer implements Player {
     private final String name;
     private final List<Frame> frames = new ArrayList<>();
     private int score = 0;
-    private int attempts = 0;
-    private Map<Integer, Frame> strikes = new HashMap<>();
-    private Map<Integer, Frame> spares = new HashMap<>();
     private Frame currentFrame;
+    private List<Frame> openFrames = new ArrayList<>(); //Frames that are not done
 
     DefaultPlayer(String name) {
         this.name = name;
@@ -33,39 +30,15 @@ class DefaultPlayer implements Player {
 
     @Override
     public void setPoints(String points) {
-        attempts += 1;
-        Frame current = getCurrentFrame();
-        if (current != null && current.setPoints(points)) {
-            if (current.isSpare()) {
-                spares.put(attempts, current);
+        addFrame();
+        openFrames.removeIf(frame -> {
+            frame.setPoints(points);
+            if (frame.isDone()) {
+                setFrameScore(frame);
+                return true;
             }
-        } else {
-            addFrame(points);
-        }
-
-        if (strikes.containsKey(attempts - 1)) {
-            strikes.get(attempts - 1).addExtraPoints(points);
-        }
-
-        if (strikes.containsKey(attempts - 2)) {
-            Frame strike = strikes.remove(attempts - 2);
-            strike.addExtraPoints(points);
-            setFrameScore(strike);
-        }
-        if (spares.containsKey(attempts - 1)) {
-            Frame spare = spares.remove(attempts - 1);
-            spare.addExtraPoints(points);
-            setFrameScore(spare);
-        }
-
-        if (getCurrentFrame().isDone()) {
-            Frame frame = getCurrentFrame();
-            setFrameScore(frame);
-        }
-    }
-
-    private Frame getCurrentFrame() {
-        return this.currentFrame;
+            return false;
+        });
     }
 
     @Override
@@ -80,15 +53,14 @@ class DefaultPlayer implements Player {
         }
     }
 
-    private void addFrame(String points) {
+    private void addFrame() {
+        if(!(frames.isEmpty() || !currentFrame.isCurrent())) return;
         if(frames.size() == FRAMES) {
             throw new AppException("Too many attempts");
         }
-        Frame frame = FrameFactory.createFrame(points, frames.size());
+        Frame frame = FrameFactory.createFrame(frames.size());
         frames.add(frame);
-        if (frame.isStrike()) {
-            strikes.put(attempts, frame);
-        }
+        openFrames.add(frame);
         this.currentFrame = frame;
     }
 
