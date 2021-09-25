@@ -6,7 +6,6 @@ import com.jobsity.challenge.models.frames.FrameFactory;
 import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
@@ -34,7 +33,7 @@ class DefaultPlayer implements Player {
         openFrames.removeIf(frame -> {
             frame.setPoints(points);
             if (frame.isDone()) {
-                setFrameScore(frame);
+                this.score = frame.setScore(this.score);
                 return true;
             }
             return false;
@@ -44,13 +43,6 @@ class DefaultPlayer implements Player {
     @Override
     public List<Frame> getFrames() {
         return frames;
-    }
-
-    private void setFrameScore(Frame frame) {
-        if (frame.getScore() == null) {
-            this.score = frame.getTotalPoints() + this.score;
-            frame.setScore(this.score);
-        }
     }
 
     private void addFrame() {

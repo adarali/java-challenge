@@ -29,32 +29,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AppTests {
 
     @Test
-    void testFrameEquals() {
-        Frame rf1 = createFrame(false, "10");
-        Frame rf2 = createFrame(false, "4");
-
-
-        Frame ff1 = createFrame(true, "5");
-        Frame ff2 = createFrame(true, "3");
-
-        assertEquals(rf2, rf1);
-        assertEquals(ff2, ff1);
-    }
-
-    @Test
     void testRegularFrame() {
-        assertThrows(AppException.class, () -> createFrame(false, "6", "5"));
+        AppException ex = assertThrows(AppException.class, () -> createFrame(false, "6", "5"));
+        assertEquals("You can't knock down more than 10 pins in a single frame", ex.getMessage());
 
         assertEquals(Arrays.asList("","X"), createFrame(false, "10").getPinfalls());
+        assertEquals(Arrays.asList("","X"), createFrame(false, "10", "7", "3").getPinfalls());
         assertEquals(Arrays.asList("8","/"), createFrame(false, "8", "2").getPinfalls());
         assertEquals(Arrays.asList("7","2"), createFrame(false, "7", "2").getPinfalls());
         assertEquals(Arrays.asList("7","2"), createFrame(false, "7", "2").getPinfalls());
         assertEquals(Arrays.asList("7","F"), createFrame(false, "7", "F").getPinfalls());
+        assertEquals(Arrays.asList("F","7"), createFrame(false, "F", "7").getPinfalls());
+        assertEquals(Arrays.asList("7","0"), createFrame(false, "7", "0").getPinfalls());
+        assertEquals(Arrays.asList("0","7"), createFrame(false, "0", "7").getPinfalls());
         assertEquals(Arrays.asList("0","/"), createFrame(false, "0", "10").getPinfalls());
         assertEquals(Arrays.asList("F","5"), createFrame(false, "F", "5").getPinfalls());
         assertEquals(Arrays.asList("F","/"), createFrame(false, "F", "10").getPinfalls());
+
         assertFalse(createFrame(false, "4", "6").isDone());
+        assertFalse(createFrame(false, "10", "6").isDone());
         assertTrue(createFrame(false, "1", "8").isDone());
+        assertTrue(createFrame(false, "1", "8", "1").isDone());
+
+        assertTrue(createFrame(false, "8").isCurrent());
+        assertFalse(createFrame(false, "8", "1").isCurrent());
+        assertFalse(createFrame(false, "10").isCurrent());
     }
 
     @Test
@@ -85,7 +84,7 @@ public class AppTests {
 
 
     @Test
-    void testPerfectInput() {
+    void testPerfectScore() {
         Map<String, Player> map = new HashMap<>();
         try(Scanner scanner = new Scanner(getResource("positive/perfect.txt"))) {
             Input.processInput(scanner, line -> Utils.setScores(map, line));

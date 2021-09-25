@@ -17,6 +17,14 @@ public class Utils {
         String points = arr[1];
         Player player = map.getOrDefault(name, Player.createPlayer(name));
         player.setPoints(points);
-        map.put(name, player);
+        map.putIfAbsent(name, player);
+    }
+
+    public static String repeatString(String str, int times) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < times; i++) {
+            sb.append(str);
+        }
+        return sb.toString();
     }
 }
