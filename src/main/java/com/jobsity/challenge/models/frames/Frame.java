@@ -20,6 +20,7 @@ public interface Frame {
      * Sets the frame score and returns the new score.
      * @param playerScore the player's current score.
      * @return the newly set score.
+     * @throws com.jobsity.challenge.exceptions.AppException if the frame is not done.
      */
     int setScore(int playerScore);
 

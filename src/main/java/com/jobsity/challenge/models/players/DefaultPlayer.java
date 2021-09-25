@@ -16,7 +16,7 @@ class DefaultPlayer implements Player {
     private final List<Frame> frames = new ArrayList<>();
     private int score = 0;
     private Frame currentFrame;
-    private List<Frame> openFrames = new ArrayList<>(); //Frames that are not done
+    private List<Frame> nonDoneFrames = new ArrayList<>(); //Frames that are not done
 
     DefaultPlayer(String name) {
         this.name = name;
@@ -29,8 +29,12 @@ class DefaultPlayer implements Player {
 
     @Override
     public void setPoints(String points) {
-        addFrame();
-        openFrames.removeIf(frame -> {
+        if (frames.isEmpty() || !currentFrame.isCurrent()) {
+            addFrame();
+        }
+
+        //Adding points to non-done frames and removing done frames from the list of non-done frames.
+        nonDoneFrames.removeIf(frame -> {
             frame.setPoints(points);
             if (frame.isDone()) {
                 this.score = frame.setScore(this.score);
@@ -46,13 +50,12 @@ class DefaultPlayer implements Player {
     }
 
     private void addFrame() {
-        if(!(frames.isEmpty() || !currentFrame.isCurrent())) return;
         if(frames.size() == FRAMES) {
-            throw new AppException("Too many attempts");
+            throw new AppException("The game is over. You cannot add more frames.");
         }
         Frame frame = FrameFactory.createFrame(frames.size());
         frames.add(frame);
-        openFrames.add(frame);
+        nonDoneFrames.add(frame);
         this.currentFrame = frame;
     }
 

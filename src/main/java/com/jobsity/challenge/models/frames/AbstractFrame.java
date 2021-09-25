@@ -1,7 +1,6 @@
 package com.jobsity.challenge.models.frames;
 
 import com.jobsity.challenge.exceptions.AppException;
-import com.jobsity.challenge.misc.Constants;
 import com.jobsity.challenge.misc.Utils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -9,7 +8,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static com.jobsity.challenge.misc.Constants.PINS;
 
@@ -47,14 +45,19 @@ public abstract class AbstractFrame implements Frame {
         return score;
     }
 
+    /**
+     * Sets the frame score.
+     * @param playerScore the player's current score.
+     * @return the current score of the frame if it's not null. otherwise the player's score.
+     */
     @Override
     public int setScore(int playerScore) {
-        if (this.score == null && isDone()) {
-            this.score = getTotalPoints() + playerScore;
+        if (!isDone()) {
+            throw new AppException("You cannot set the score if the frame is not done");
         }
+        this.score = getTotalPoints() + playerScore;
         return this.score;
     }
-
 
     protected int getTotalPoints() {
         return attempts.stream().mapToInt(n -> n).sum();

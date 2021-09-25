@@ -23,6 +23,10 @@ class RegularFrame extends AbstractFrame {
         return !getAttempts().isEmpty() && getAttempts().get(0) == Constants.PINS;
     }
 
+    @Override
+    protected boolean isSpare() {
+        return !isStrike() && super.isSpare();
+    }
 
     @Override
     public boolean isCurrent() {

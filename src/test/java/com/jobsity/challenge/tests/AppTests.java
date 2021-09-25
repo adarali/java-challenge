@@ -54,6 +54,10 @@ public class AppTests {
         assertTrue(createFrame(false, "8").isCurrent());
         assertFalse(createFrame(false, "8", "1").isCurrent());
         assertFalse(createFrame(false, "10").isCurrent());
+
+        Frame frame = createFrame(false);
+        assertThrows(AppException.class, () -> frame.setScore(30));
+
     }
 
     @Test
@@ -158,7 +162,7 @@ public class AppTests {
                         break;
                     case "extra-score.txt":
                     case "zeros-extra-score.txt":
-                        assertEquals("Too many attempts", message);
+                        assertEquals("The game is over. You cannot add more frames.", message);
                         break;
                 }
 
