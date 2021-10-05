@@ -45,11 +45,7 @@ public abstract class AbstractFrame implements Frame {
         return score;
     }
 
-    /**
-     * Sets the frame score.
-     * @param playerScore the player's current score.
-     * @return the current score of the frame if it's not null. otherwise the player's score.
-     */
+
     @Override
     public int setScore(int playerScore) {
         if (!isDone()) {
