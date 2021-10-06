@@ -2,17 +2,22 @@ package com.jobsity.challenge.tests;
 
 
 import com.jobsity.challenge.exceptions.AppException;
-import com.jobsity.challenge.misc.Input;
-import com.jobsity.challenge.misc.Utils;
+import com.jobsity.challenge.input.FileInputReader;
+import com.jobsity.challenge.input.InputReader;
+import com.jobsity.challenge.input.InputStreamInputReader;
+import com.jobsity.challenge.input.ScannerInputReader;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
 import com.jobsity.challenge.models.players.Player;
+import com.jobsity.challenge.processors.PlayerLineProcessor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTests {
+
 
     @Test
     void testRegularFrame() {
@@ -90,8 +96,7 @@ public class AppTests {
     @Test
     void testPerfectScore() {
         Map<String, Player> map = new HashMap<>();
-        try(Scanner scanner = new Scanner(getResource("positive/perfect.txt"))) {
-            Input.processInput(scanner, line -> Utils.setScores(map, line));
+            new InputStreamInputReader<>(getResource("positive/perfect.txt"), new PlayerLineProcessor(map)).read();
             String key = map.keySet().stream().findAny().orElse(null);
             List<Frame> frames = map.get(key).getFrames();
             List<Integer> scores = frames.stream().map(Frame::getScore).collect(Collectors.toList());
@@ -101,73 +106,73 @@ public class AppTests {
             }
             assertEquals(Arrays.asList("X", "X", "X"), frames.get(i).getPinfalls());
             assertEquals(Arrays.asList(30, 60, 90, 120, 150, 180, 210, 240, 270, 300), scores);
-        }
+
     }
 
     @Test
     void testZeros() {
         Map<String, Player> map = new HashMap<>();
-        try(Scanner scanner = new Scanner(getResource("positive/zeros.txt"))) {
-            Input.processInput(scanner, line -> Utils.setScores(map, line));
-            List<Frame> frames = Objects.requireNonNull(map.values().stream().findFirst().orElse(null)).getFrames();
-            assertEquals(FRAMES, frames.size());
-            assertTrue(frames.stream().map(Frame::getScore).allMatch(n -> n == 0));
-        }
+
+        getInputReader(getResource("positive/zeros.txt"), map).read();
+        List<Frame> frames = Objects.requireNonNull(map.values().stream().findFirst().orElse(null)).getFrames();
+        assertEquals(FRAMES, frames.size());
+        assertTrue(frames.stream().map(Frame::getScore).allMatch(n -> n == 0));
+
 
     }
 
     @Test
     void testScores() {
         Map<String, Player> map = new HashMap<>();
-        try(Scanner scanner = new Scanner(getResource("positive/scores.txt"))) {
-            Input.processInput(scanner, line -> Utils.setScores(map, line));
-            List<Frame> jeffFrames = map.get("Jeff").getFrames();
-            List<Frame> johnFrames = map.get("John").getFrames();
 
-            List<Integer> expectedJeffScores = Arrays.asList(20, 39, 48, 66, 74, 84, 90, 120, 148, 167);
-            assertEquals(expectedJeffScores, jeffFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
+        new InputStreamInputReader<>(getResource("positive/scores.txt"), new PlayerLineProcessor(map)).read();
+        List<Frame> jeffFrames = map.get("Jeff").getFrames();
+        List<Frame> johnFrames = map.get("John").getFrames();
 
-            List<Integer> expectedJohnScores = Arrays.asList(16, 25, 44, 53, 82, 101, 110, 124, 132, 151);
-            assertEquals(expectedJohnScores, johnFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
+        List<Integer> expectedJeffScores = Arrays.asList(20, 39, 48, 66, 74, 84, 90, 120, 148, 167);
+        assertEquals(expectedJeffScores, jeffFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
 
-            assertEquals(Arrays.asList("3", "/"), johnFrames.get(0).getPinfalls());
-            assertEquals(Arrays.asList("7", "/"), johnFrames.get(7).getPinfalls());
-            assertEquals(Arrays.asList("8", "/"), jeffFrames.get(5).getPinfalls());
-            assertEquals(Arrays.asList("", "X"), jeffFrames.get(0).getPinfalls());
+        List<Integer> expectedJohnScores = Arrays.asList(16, 25, 44, 53, 82, 101, 110, 124, 132, 151);
+        assertEquals(expectedJohnScores, johnFrames.stream().map(Frame::getScore).collect(Collectors.toList()));
 
-        }
+        assertEquals(Arrays.asList("3", "/"), johnFrames.get(0).getPinfalls());
+        assertEquals(Arrays.asList("7", "/"), johnFrames.get(7).getPinfalls());
+        assertEquals(Arrays.asList("8", "/"), jeffFrames.get(5).getPinfalls());
+        assertEquals(Arrays.asList("", "X"), jeffFrames.get(0).getPinfalls());
+
+
 
     }
 
     @Test
-    void testNegativeInput() throws FileNotFoundException {
+    void testNegativeInput() {
         File dir = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("negative")).getFile());
         for (File file : Objects.requireNonNull(dir.listFiles())) {
-            try (Scanner scanner = new Scanner(file)) {
-                Map<String, Player> map = new HashMap<>();
-                String message = assertThrows(AppException.class, () -> Input.processInput(scanner, line -> Utils.setScores(map, line))
-                        , String.format("File \"%s\" does not throw exception", file.getName()))
-                        .getMessage();
 
-                switch (file.getName()) {
-                    case "free-text.txt":
-                        assertEquals("Line 1 is invalid", message);
-                        break;
-                    case "negative.txt":
-                    case "invalid-score.txt":
-                        assertEquals("Line 2 is invalid", message);
-                        break;
-                    case "empty.txt":
-                        assertEquals("The file is empty", message);
-                        break;
-                    case "extra-score.txt":
-                    case "zeros-extra-score.txt":
-                        assertEquals("The game is over. You cannot add more frames.", message);
-                        break;
-                }
+            Map<String, Player> map = new HashMap<>();
+            String message = assertThrows(AppException.class, () -> new FileInputReader<>(file, new PlayerLineProcessor(map)).read()
+                    , String.format("File \"%s\" does not throw exception", file.getName()))
+                    .getMessage();
 
+            switch (file.getName()) {
+                case "free-text.txt":
+                    assertEquals("Line 1 is invalid", message);
+                    break;
+                case "negative.txt":
+                case "invalid-score.txt":
+                    assertEquals("Line 2 is invalid", message);
+                    break;
+                case "empty.txt":
+                    assertEquals("The file is empty", message);
+                    break;
+                case "extra-score.txt":
+                case "zeros-extra-score.txt":
+                    assertEquals("The game is over. You cannot add more frames.", message);
+                    break;
             }
+
         }
+
     }
 
     private Frame createFrame(boolean isFinal, String... points) {
@@ -181,4 +186,10 @@ public class AppTests {
     private InputStream getResource(String path) {
         return getClass().getClassLoader().getResourceAsStream(path);
     }
+
+    private InputReader<Collection<Player>> getInputReader(InputStream inputStream, Map<String, Player> map) {
+        return new InputStreamInputReader<>(inputStream, new PlayerLineProcessor(map));
+    }
+
+
 }

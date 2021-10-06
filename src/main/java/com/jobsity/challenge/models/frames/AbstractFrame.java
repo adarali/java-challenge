@@ -1,7 +1,6 @@
 package com.jobsity.challenge.models.frames;
 
 import com.jobsity.challenge.exceptions.AppException;
-import com.jobsity.challenge.misc.Utils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +26,7 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public void setPoints(String pointsString) {
-        int points = Utils.parsePoints(pointsString);
+        int points = parsePoints(pointsString);
         validatePoints(points);
         if (isCurrent()) {
             pinfalls.add(points == PINS ? "X" : pointsString);
@@ -92,6 +91,11 @@ public abstract class AbstractFrame implements Frame {
                 throw new AppException(String.format("You can't knock down more than %d pins in a single frame", PINS));
             }
         }
+    }
+
+    protected int parsePoints(String points) {
+        if(points == null || "F".equals(points)) return 0;
+        return Integer.parseInt(points);
     }
 
     @Override
