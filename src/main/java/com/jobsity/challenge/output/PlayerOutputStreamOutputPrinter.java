@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
-public class OutputStreamOutputPrinter implements OutputPrinter<Player>{
+public class PlayerOutputStreamOutputPrinter implements OutputPrinter<Player>{
 
     private OutputStream outputStream;
 
-    public OutputStreamOutputPrinter(OutputStream outputStream) {
+    public PlayerOutputStreamOutputPrinter(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
