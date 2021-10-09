@@ -1,5 +1,5 @@
 # Java Challenge
-This project is a solution for [Jobsity Java Challenge](https://git.jobsity.com/jobsity/JavaChallenge/-/wikis/Java%20Challenge)
+This project is a solution for [Jobsity Java Challenge](https://github.com/adarali/jobsity-java-challenge/wiki/Java-Challenge)
 
 To be able to compile and run the project, you need to have JDK 1.8 installed on your system.
 
