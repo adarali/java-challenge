@@ -5,5 +5,5 @@ import com.jobsity.challenge.models.players.Player;
 import java.util.Collection;
 
 public interface OutputPrinter<T> {
-    void print(Collection<T> players);
+    void print(T players);
 }

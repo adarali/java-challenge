@@ -19,7 +19,7 @@ public class FileInputReader<T> extends ScannerInputReader<T>{
 
     @SneakyThrows
     @Override
-    public Collection<T> read() {
+    public T read() {
         try (Scanner scanner = new Scanner(file)) {
             return read(scanner);
         }

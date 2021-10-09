@@ -9,11 +9,11 @@ import java.util.Collection;
 import java.util.Scanner;
 
 @RequiredArgsConstructor
-public abstract class ScannerInputReader<T> implements InputReader<Collection<T>> {
+public abstract class ScannerInputReader<T> implements InputReader<T> {
 
     private final LineProcessor<T> lineProcessor;
 
-    protected Collection<T> read(Scanner scanner) {
+    protected T read(Scanner scanner) {
 
         int i = 0;
 

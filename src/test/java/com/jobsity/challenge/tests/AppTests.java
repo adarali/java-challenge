@@ -5,24 +5,25 @@ import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.input.FileInputReader;
 import com.jobsity.challenge.input.InputReader;
 import com.jobsity.challenge.input.InputStreamInputReader;
-import com.jobsity.challenge.input.ScannerInputReader;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.frames.FrameFactory;
 import com.jobsity.challenge.models.players.Player;
+import com.jobsity.challenge.models.players.PlayerFactory;
 import com.jobsity.challenge.processors.PlayerLineProcessor;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
@@ -31,26 +32,32 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class AppTests {
 
+    @Autowired
+    FrameFactory frameFactory;
+    @Autowired
+    PlayerFactory playerFactory;
 
     @Test
     void testRegularFrame() {
         AppException ex = assertThrows(AppException.class, () -> createFrame(false, "6", "5"));
         assertEquals("You can't knock down more than 10 pins in a single frame", ex.getMessage());
 
-        assertEquals(Arrays.asList("","X"), createFrame(false, "10").getPinfalls());
-        assertEquals(Arrays.asList("","X"), createFrame(false, "10", "7", "3").getPinfalls());
-        assertEquals(Arrays.asList("8","/"), createFrame(false, "8", "2").getPinfalls());
-        assertEquals(Arrays.asList("7","2"), createFrame(false, "7", "2").getPinfalls());
-        assertEquals(Arrays.asList("7","2"), createFrame(false, "7", "2").getPinfalls());
-        assertEquals(Arrays.asList("7","F"), createFrame(false, "7", "F").getPinfalls());
-        assertEquals(Arrays.asList("F","7"), createFrame(false, "F", "7").getPinfalls());
-        assertEquals(Arrays.asList("7","0"), createFrame(false, "7", "0").getPinfalls());
-        assertEquals(Arrays.asList("0","7"), createFrame(false, "0", "7").getPinfalls());
-        assertEquals(Arrays.asList("0","/"), createFrame(false, "0", "10").getPinfalls());
-        assertEquals(Arrays.asList("F","5"), createFrame(false, "F", "5").getPinfalls());
-        assertEquals(Arrays.asList("F","/"), createFrame(false, "F", "10").getPinfalls());
+        assertEquals(Arrays.asList("", "X"), createFrame(false, "10").getPinfalls());
+        assertEquals(Arrays.asList("", "X"), createFrame(false, "10", "7", "3").getPinfalls());
+        assertEquals(Arrays.asList("8", "/"), createFrame(false, "8", "2").getPinfalls());
+        assertEquals(Arrays.asList("7", "2"), createFrame(false, "7", "2").getPinfalls());
+        assertEquals(Arrays.asList("7", "2"), createFrame(false, "7", "2").getPinfalls());
+        assertEquals(Arrays.asList("7", "F"), createFrame(false, "7", "F").getPinfalls());
+        assertEquals(Arrays.asList("F", "7"), createFrame(false, "F", "7").getPinfalls());
+        assertEquals(Arrays.asList("7", "0"), createFrame(false, "7", "0").getPinfalls());
+        assertEquals(Arrays.asList("0", "7"), createFrame(false, "0", "7").getPinfalls());
+        assertEquals(Arrays.asList("0", "/"), createFrame(false, "0", "10").getPinfalls());
+        assertEquals(Arrays.asList("F", "5"), createFrame(false, "F", "5").getPinfalls());
+        assertEquals(Arrays.asList("F", "/"), createFrame(false, "F", "10").getPinfalls());
 
         assertFalse(createFrame(false, "4", "6").isDone());
         assertFalse(createFrame(false, "10", "6").isDone());
@@ -73,7 +80,7 @@ public class AppTests {
         Frame frame = createFrame(true, "10", "7");
         assertThrows(AppException.class, () -> frame.setPoints("4"));
         frame.setPoints("3");
-        assertEquals(Arrays.asList("X","7","/"), frame.getPinfalls());
+        assertEquals(Arrays.asList("X", "7", "/"), frame.getPinfalls());
 
         assertThrows(AppException.class, () -> createFrame(true, "10", "8", "3"));
         assertThrows(AppException.class, () -> createFrame(true, "10", "10", "20"));
@@ -95,25 +102,23 @@ public class AppTests {
 
     @Test
     void testPerfectScore() {
-        Map<String, Player> map = new HashMap<>();
-            new InputStreamInputReader<>(getResource("positive/perfect.txt"), new PlayerLineProcessor(map)).read();
-            String key = map.keySet().stream().findAny().orElse(null);
-            List<Frame> frames = map.get(key).getFrames();
-            List<Integer> scores = frames.stream().map(Frame::getScore).collect(Collectors.toList());
-            int i;
-            for (i = 0; i < frames.size() - 1; i++) {
-                assertEquals(Arrays.asList("", "X"), frames.get(i).getPinfalls());
-            }
-            assertEquals(Arrays.asList("X", "X", "X"), frames.get(i).getPinfalls());
-            assertEquals(Arrays.asList(30, 60, 90, 120, 150, 180, 210, 240, 270, 300), scores);
+        Map<String, Player> map = getInputReader(getResource("positive/perfect.txt")).read();
+        String key = map.keySet().stream().findAny().orElse(null);
+        List<Frame> frames = map.get(key).getFrames();
+        List<Integer> scores = frames.stream().map(Frame::getScore).collect(Collectors.toList());
+        int i;
+        for (i = 0; i < frames.size() - 1; i++) {
+            assertEquals(Arrays.asList("", "X"), frames.get(i).getPinfalls());
+        }
+        assertEquals(Arrays.asList("X", "X", "X"), frames.get(i).getPinfalls());
+        assertEquals(Arrays.asList(30, 60, 90, 120, 150, 180, 210, 240, 270, 300), scores);
 
     }
 
     @Test
     void testZeros() {
-        Map<String, Player> map = new HashMap<>();
 
-        getInputReader(getResource("positive/zeros.txt"), map).read();
+        Map<String, Player> map = getInputReader(getResource("positive/zeros.txt")).read();
         List<Frame> frames = Objects.requireNonNull(map.values().stream().findFirst().orElse(null)).getFrames();
         assertEquals(FRAMES, frames.size());
         assertTrue(frames.stream().map(Frame::getScore).allMatch(n -> n == 0));
@@ -123,9 +128,8 @@ public class AppTests {
 
     @Test
     void testScores() {
-        Map<String, Player> map = new HashMap<>();
 
-        new InputStreamInputReader<>(getResource("positive/scores.txt"), new PlayerLineProcessor(map)).read();
+        Map<String, Player> map = getInputReader(getResource("positive/scores.txt")).read();
         List<Frame> jeffFrames = map.get("Jeff").getFrames();
         List<Frame> johnFrames = map.get("John").getFrames();
 
@@ -141,7 +145,6 @@ public class AppTests {
         assertEquals(Arrays.asList("", "X"), jeffFrames.get(0).getPinfalls());
 
 
-
     }
 
     @Test
@@ -149,8 +152,7 @@ public class AppTests {
         File dir = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("negative")).getFile());
         for (File file : Objects.requireNonNull(dir.listFiles())) {
 
-            Map<String, Player> map = new HashMap<>();
-            String message = assertThrows(AppException.class, () -> new FileInputReader<>(file, new PlayerLineProcessor(map)).read()
+            String message = assertThrows(AppException.class, () -> getInputReader(file).read()
                     , String.format("File \"%s\" does not throw exception", file.getName()))
                     .getMessage();
 
@@ -176,20 +178,19 @@ public class AppTests {
     }
 
     private Frame createFrame(boolean isFinal, String... points) {
-        Frame frame = FrameFactory.createFrame(isFinal ? FRAMES - 1 : 0);
+        Frame frame = frameFactory.createFrame(isFinal ? FRAMES - 1 : 0);
         for (String point : points) {
             frame.setPoints(point);
         }
         return frame;
     }
 
-    private InputStream getResource(String path) {
-        return getClass().getClassLoader().getResourceAsStream(path);
+    @SneakyThrows
+    private File getResource(String path) {
+        return new ClassPathResource(path).getFile();
     }
 
-    private InputReader<Collection<Player>> getInputReader(InputStream inputStream, Map<String, Player> map) {
-        return new InputStreamInputReader<>(inputStream, new PlayerLineProcessor(map));
+    private InputReader<Map<String, Player>> getInputReader(File file) {
+        return new FileInputReader<>(file, new PlayerLineProcessor(playerFactory));
     }
-
-
 }

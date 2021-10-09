@@ -11,14 +11,17 @@ import java.util.List;
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
 @EqualsAndHashCode(of = "name")
-class DefaultPlayer implements Player {
+public class DefaultPlayer implements Player {
+
+    private final FrameFactory frameFactory;
     private final String name;
     private final List<Frame> frames = new ArrayList<>();
     private int score = 0;
     private Frame currentFrame;
     private List<Frame> nonDoneFrames = new ArrayList<>(); //Frames that are not done
 
-    DefaultPlayer(String name) {
+    public DefaultPlayer(FrameFactory frameFactory, String name) {
+        this.frameFactory = frameFactory;
         this.name = name;
     }
 
@@ -53,10 +56,14 @@ class DefaultPlayer implements Player {
         if(frames.size() == FRAMES) {
             throw new AppException("The game is over. You cannot add more frames.");
         }
-        Frame frame = FrameFactory.createFrame(frames.size());
+        Frame frame = getNewFrame(frames.size());
         frames.add(frame);
         nonDoneFrames.add(frame);
         this.currentFrame = frame;
+    }
+
+    protected Frame getNewFrame(int frameCount) {
+        return frameFactory.createFrame(frameCount);
     }
 
     @Override

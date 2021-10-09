@@ -24,7 +24,4 @@ public interface Player {
      */
     void setPoints(String points);
 
-    static Player createPlayer(String name) {
-        return new DefaultPlayer(name);
-    }
 }

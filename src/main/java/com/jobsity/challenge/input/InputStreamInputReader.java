@@ -16,7 +16,7 @@ public class InputStreamInputReader<T> extends ScannerInputReader<T> {
     }
 
     @Override
-    public Collection<T> read() {
+    public T read() {
         try (Scanner scanner = new Scanner(inputStream)) {
             return super.read(scanner);
         }

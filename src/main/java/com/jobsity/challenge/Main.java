@@ -8,23 +8,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Collection;
+import java.util.Map;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-public class Main implements CommandLineRunner {
+public class Main {
 
-    private final InputReader<Collection<Player>> inputReader;
-    private final OutputPrinter<Player> outputPrinter;
+    private final InputReader<Map<String, Player>> inputReader;
+    private final OutputPrinter<Collection<Player>> outputPrinter;
 
-    @Override
-    public void run(String... args) {
+    public void start() {
         try {
-            outputPrinter.print(inputReader.read());
+            outputPrinter.print(inputReader.read().values());
         } catch (AppException e) {
             System.err.println("Error: " + e.getMessage());
         }
+    }
+
+    @Bean
+    @Profile("!test")
+    CommandLineRunner runner() {
+        return args -> start();
     }
 
     public static void main(String[] args) {
@@ -32,8 +40,9 @@ public class Main implements CommandLineRunner {
             System.err.println("Please specify the filename");
             return;
         }
-//        InputReader<Collection<Player>> inputReader = new FileInputReader<>(new File(args[0]), new PlayerLineProcessor());
-//        new Main(inputReader, new OutputStreamOutputPrinter(System.out)).doStuff();
+//        String filename = args[0].split("=")[1];
+//        InputReader<Collection<Player>> inputReader = new FileInputReader<>(new File(filename), new PlayerLineProcessor(new HashMap<>()));
+//        new Main(inputReader, new PlayerOutputStreamOutputPrinter(System.out)).run(args);
 
         SpringApplication.run(Main.class, args);
 

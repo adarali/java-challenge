@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
-public class PlayerOutputStreamOutputPrinter implements OutputPrinter<Player>{
+public class PlayerOutputStreamOutputPrinter implements OutputPrinter<Collection<Player>>{
 
     private OutputStream outputStream;
 
