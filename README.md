@@ -8,11 +8,11 @@ To compile the project, run the command
 
 To run the project, run the command
 
-`java -jar target/challenge.jar <path-to-file>`
+`java -jar target/challenge.jar --file=<path-to-file>`
 
 For example, to process the data included inside input.txt file, run the command
 
-`java -jar target/challenge.jar input.txt`
+`java -jar target/challenge.jar --file=input.txt`
 
 The path may be absolute or relative to the current directory.
 

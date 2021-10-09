@@ -18,21 +18,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Main {
 
-    private final InputReader<Map<String, Player>> inputReader;
-    private final OutputPrinter<Collection<Player>> outputPrinter;
-
-    public void start() {
-        try {
-            outputPrinter.print(inputReader.read().values());
-        } catch (AppException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-    }
-
     @Bean
     @Profile("!test")
-    CommandLineRunner runner() {
-        return args -> start();
+    CommandLineRunner runner(InputReader<Map<String, Player>> inputReader, OutputPrinter<Collection<Player>> outputPrinter) {
+        return args -> {
+            try {
+                outputPrinter.print(inputReader.read().values());
+            } catch (AppException e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        };
     }
 
     public static void main(String[] args) {
@@ -40,9 +35,7 @@ public class Main {
             System.err.println("Please specify the filename");
             return;
         }
-//        String filename = args[0].split("=")[1];
-//        InputReader<Collection<Player>> inputReader = new FileInputReader<>(new File(filename), new PlayerLineProcessor(new HashMap<>()));
-//        new Main(inputReader, new PlayerOutputStreamOutputPrinter(System.out)).run(args);
+
 
         SpringApplication.run(Main.class, args);
 
