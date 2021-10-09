@@ -62,7 +62,7 @@ public class DefaultPlayer implements Player {
         this.currentFrame = frame;
     }
 
-    protected Frame getNewFrame(int frameCount) {
+    private Frame getNewFrame(int frameCount) {
         return frameFactory.createFrame(frameCount);
     }
 

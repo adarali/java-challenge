@@ -5,7 +5,6 @@ import com.jobsity.challenge.models.players.PlayerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import java.util.Map;
 @Component
 public class PlayerLineProcessor implements LineProcessor<Map<String, Player>> {
 
-    private final Map<String, Player> map = new HashMap<>();
+    private Map<String, Player> map = new HashMap<>();
     private final PlayerFactory playerFactory;
 
     @Override
@@ -29,7 +28,6 @@ public class PlayerLineProcessor implements LineProcessor<Map<String, Player>> {
             map.put(name, player);
         }
         player.setPoints(points);
-
     }
 
     @Override
@@ -37,7 +35,7 @@ public class PlayerLineProcessor implements LineProcessor<Map<String, Player>> {
         return map;
     }
 
-    protected Player getPlayer(String name) {
+    private Player getPlayer(String name) {
         return playerFactory.createPlayer(name);
     }
 }

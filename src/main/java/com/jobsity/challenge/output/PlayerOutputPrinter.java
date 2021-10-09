@@ -4,29 +4,23 @@ import com.jobsity.challenge.misc.Utils;
 import com.jobsity.challenge.models.frames.Frame;
 import com.jobsity.challenge.models.players.Player;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Component;
 
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.jobsity.challenge.misc.Constants.FRAMES;
 
-public class PlayerOutputStreamOutputPrinter implements OutputPrinter<Collection<Player>>{
+@Component
+public class PlayerOutputPrinter implements OutputPrinter<Map<String, Player>>{
 
-    private OutputStream outputStream;
-
-    public PlayerOutputStreamOutputPrinter(OutputStream outputStream) {
-        this.outputStream = outputStream;
-    }
-
+    @SneakyThrows
     @Override
-    public void print(Collection<Player> players) {
+    public void print(Map<String, Player> players) {
         printRow("Frame", IntStream.range(1, FRAMES + 1).boxed());
 
-        players.forEach(player -> {
+        players.values().forEach(player -> {
             printRow(player.getName(), Stream.empty());
             Stream<String> pinfalls = player.getFrames().stream()
                     .map(frame -> String.join("  ", frame.getPinfalls()));
@@ -40,7 +34,6 @@ public class PlayerOutputStreamOutputPrinter implements OutputPrinter<Collection
     @SneakyThrows
     private void printRow(String prefix, Stream<?> stream) {
         Object[] arr = Stream.concat(Stream.of(prefix), stream).toArray();
-        String s = String.format(Utils.repeatString("%-10s", arr.length - 1) + "%s" + "%n", arr);
-        IOUtils.write(s, this.outputStream, StandardCharsets.UTF_8);
+        System.out.format(Utils.repeatString("%-10s", arr.length - 1) + "%s" + "%n", arr);
     }
 }
