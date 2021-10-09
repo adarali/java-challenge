@@ -36,7 +36,7 @@ public class DefaultPlayer implements Player {
             addFrame();
         }
 
-        //Adding points to non-done frames and removing done frames from the list of non-done frames.
+        //Adding points to non-done frames and removing done frames
         nonDoneFrames.removeIf(frame -> {
             frame.setPoints(points);
             if (frame.isDone()) {
