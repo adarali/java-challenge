@@ -1,5 +1,6 @@
 package com.jobsity.challenge.input;
 
+import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.processors.LineProcessor;
 
 import java.io.InputStream;
@@ -20,5 +21,10 @@ public class InputStreamInputReader<T> extends ScannerInputReader<T> {
         try (Scanner scanner = new Scanner(inputStream)) {
             return super.read(scanner);
         }
+    }
+
+    @Override
+    protected void doIfEmpty() {
+        throw new AppException("The stream is empty");
     }
 }

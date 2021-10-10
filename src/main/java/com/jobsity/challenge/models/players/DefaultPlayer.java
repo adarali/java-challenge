@@ -56,14 +56,14 @@ public class DefaultPlayer implements Player {
         if(frames.size() == FRAMES) {
             throw new AppException("The game is over. You cannot add more frames.");
         }
-        Frame frame = getNewFrame(frames.size());
+        Frame frame = getNewFrame();
         frames.add(frame);
         nonDoneFrames.add(frame);
         this.currentFrame = frame;
     }
 
-    private Frame getNewFrame(int frameCount) {
-        return frameFactory.createFrame(frameCount);
+    private Frame getNewFrame() {
+        return frameFactory.createFrame(this);
     }
 
     @Override

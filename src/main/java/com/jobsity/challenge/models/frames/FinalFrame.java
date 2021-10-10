@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-class FinalFrame extends AbstractFrame {
+public class FinalFrame extends AbstractFrame {
     public FinalFrame(Integer frameNumber) {
         super(frameNumber);
     }

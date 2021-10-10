@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
+import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Map;
 
 @SpringBootApplication
@@ -22,16 +24,21 @@ public class Main {
 
     @Bean
     @Profile("!test")
-    CommandLineRunner runner(InputReader<Map<String, Player>> inputReader, OutputPrinter<Map<String, Player>> outputPrinter) {
+    CommandLineRunner runner(InputReader<Map<String, Player>> inputReader, OutputPrinter<Collection<Player>> outputPrinter) {
         return args -> {
             try {
-                outputPrinter.print(inputReader.read());
+                outputPrinter.print(inputReader.read().values());
             } catch (AppException e) {
                 System.err.println("Error: " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
+    }
+
+    @Bean
+    PrintWriter printWriter() {
+        return new PrintWriter(System.out);
     }
 
     public static void main(String[] args) {

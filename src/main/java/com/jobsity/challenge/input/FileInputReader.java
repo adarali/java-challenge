@@ -1,5 +1,6 @@
 package com.jobsity.challenge.input;
 
+import com.jobsity.challenge.exceptions.AppException;
 import com.jobsity.challenge.processors.LineProcessor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,5 +28,10 @@ public class FileInputReader<T> extends ScannerInputReader<T>{
         try (Scanner scanner = new Scanner(file)) {
             return read(scanner);
         }
+    }
+
+    @Override
+    protected void doIfEmpty() {
+        throw new AppException("The file is empty");
     }
 }

@@ -26,8 +26,10 @@ public abstract class ScannerInputReader<T> implements InputReader<T> {
             lineProcessor.process(line);
         }
         if (i == 0) {
-            throw new AppException("The file is empty");
+            doIfEmpty();
         }
         return lineProcessor.getProcessedData();
     }
+
+    protected abstract void doIfEmpty();
 }

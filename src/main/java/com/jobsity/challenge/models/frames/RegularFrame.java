@@ -5,9 +5,9 @@ import com.jobsity.challenge.misc.Constants;
 import java.util.Arrays;
 import java.util.List;
 
-class RegularFrame extends AbstractFrame {
+public class RegularFrame extends AbstractFrame {
 
-    RegularFrame(int frameNumber) {
+    public RegularFrame(int frameNumber) {
         super(frameNumber);
     }
 
